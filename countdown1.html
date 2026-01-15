@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>春节放假倒计时｜2026-02-14 18:00</title>
+  <style>
+    :root{
+      --paper:#fbf6ea;
+      --paper2:#fffdf6;
+      --ink:#1f2328;
+      --muted: rgba(31,35,40,0.62);
+
+      --red:#d8172a;
+      --gold:#c79a2a;
+      --jade:#1f8a70;
+      --plum:#b11c3a;
+
+      --card: rgba(255,255,255,0.80);
+      --line: rgba(31,35,40,0.12);
+      --shadow: 0 18px 40px rgba(15, 20, 25, 0.14);
+      --radius: 18px;
+
+      --todayBg: rgba(216, 23, 42, 0.10);
+      --todayLine: rgba(216, 23, 42, 0.34);
+
+      --work: #8b4513;     /* 咖啡色 */
+      --rest: #0a79ff;     /* 海蓝色 */
+      --rest2:#ffb703;     /* 太阳黄 */
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", Arial;
+      background:
+        radial-gradient(900px 540px at 12% 10%, rgba(216,23,42,0.14), transparent 60%),
+        radial-gradient(900px 540px at 85% 12%, rgba(199,154,42,0.16), transparent 60%),
+        radial-gradient(900px 540px at 70% 90%, rgba(31,138,112,0.12), transparent 62%),
+        linear-gradient(180deg, var(--paper), var(--paper2));
+      overflow-x:hidden;
+    }
+
+    /* 宣纸纹理 */
+    .paperNoise{
+      pointer-events:none;
+      position:fixed; inset:0;
+      opacity:.13;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+      mix-blend-mode:multiply;
+    }
+
+    /* 冬日国画风背景：梅枝、远山、飞雪、红日与屋檐（极简水墨） */
+    .bgArt{
+      pointer-events:none;
+      position:fixed; inset:0;
+      z-index:-1;
+      opacity: 0.95;
+    }
+    .bgArt svg{ width:100%; height:100%; display:block; }
+
+    .wrap{
+      width:min(1100px, calc(100% - 28px));
+      margin: 16px auto 34px;
+      display:grid;
+      gap: 14px;
+    }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap: 12px;
+      padding: 4px 4px 0;
+    }
+    h1{
+      margin:0;
+      font-size: 18px;
+      font-weight: 860;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:6px 0 0;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .stamp{
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(216,23,42,0.22);
+      background: rgba(216,23,42,0.06);
+      box-shadow: 0 10px 22px rgba(216,23,42,0.08);
+      font-size: 12px;
+      color: rgba(216,23,42,0.92);
+      white-space: nowrap;
+    }
+
+    .card{
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 12px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* 倒计时 */
+    .countInner{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+    .targetText{
+      display:flex;
+      flex-direction:column;
+      gap: 4px;
+      min-width: 260px;
+    }
+    .t1{
+      font-size: 13px;
+      font-weight: 760;
+      color: rgba(31,35,40,0.88);
+    }
+    .t2{
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .digits{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .chip{
+      border-radius: 16px;
+      border: 1px solid rgba(216,23,42,0.18);
+      background: rgba(255,255,255,0.82);
+      padding: 12px 12px;
+      min-width: 92px;
+      text-align:center;
+    }
+    .num{
+      font-variant-numeric: tabular-nums;
+      font-size: 30px;
+      font-weight: 950;
+      line-height: 1.02;
+      color: var(--red);
+      text-shadow: 0 8px 22px rgba(216,23,42,0.10);
+    }
+    .lab{
+      margin-top: 7px;
+      font-size: 12px;
+      color: rgba(216,23,42,0.75);
+      letter-spacing:.6px;
+      font-weight: 750;
+    }
+
+    /* 日历 */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .day{
+      border-radius: 18px;
+      border: 1px solid rgba(31,35,40,0.10);
+      background: rgba(255,255,255,0.80);
+      padding: 12px 12px 10px;
+      min-height: 108px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      box-shadow: 0 8px 18px rgba(15, 20, 25, 0.05);
+      position:relative;
+      overflow:hidden;
+    }
+    .day.today{
+      background: var(--todayBg);
+      border-color: var(--todayLine);
+      box-shadow: 0 16px 26px rgba(216,23,42,0.10);
+    }
+
+    .dateRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      font-variant-numeric: tabular-nums;
+    }
+    .dateLeft{
+      display:flex;
+      align-items:baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width:0;
+    }
+    .dateText{
+      font-weight: 920;
+      font-size: 13px;
+      letter-spacing:.2px;
+      color: rgba(31,35,40,0.92);
+      white-space:nowrap;
+    }
+    .wk{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 720;
+      white-space:nowrap;
+    }
+
+    /* 右侧：只有今天显示小圆点提示，其他日期不显示“方框” */
+    .todayDot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--red);
+      box-shadow: 0 0 0 6px rgba(216,23,42,0.12);
+      flex:0 0 auto;
+    }
+    .spacer{
+      width: 8px; height: 8px; opacity:0;
+      flex:0 0 auto;
+    }
+
+    /* 工作日/休息日图标（颜色对比明显） */
+    .icon{
+      position:absolute;
+      right: 10px;
+      bottom: 10px;
+      font-size: 20px;
+      line-height: 1;
+      user-select:none;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.08));
+      opacity: 0.95;
+    }
+    .icon.work{ color: var(--work); }
+    .icon.rest{ color: var(--rest); text-shadow: 0 0 0 rgba(0,0,0,0); }
+    .icon.rest::after{
+      content:"";
+      position:absolute;
+      inset:auto auto 2px 10px;
+      width: 12px; height: 12px;
+      border-radius: 999px;
+      background: var(--rest2);
+      opacity: 0.9;
+      z-index:-1;
+      filter: blur(0.2px);
+    }
+
+    /* 祝福语：<= 8字，不要外框 */
+    .bless{
+      margin-top:auto;
+      border:0;
+      padding:0;
+      background:transparent;
+      cursor:pointer;
+      text-align:left;
+      font-size: 13px;
+      line-height: 1.35;
+      color: rgba(31,35,40,0.86);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .bless:hover{ color: rgba(216,23,42,0.92); }
+    .bless:focus{ outline: none; }
+
+    .foot{
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* 烟花：不遮住日历（只在页面上半部显示），点击后显示5秒 */
+    #fx{
+      position:fixed;
+      left:0; top:0;
+      width:100%;
+      height: 48vh;          /* 只占上半部 */
+      pointer-events:none;
+      z-index: 20;           /* 比日历低（避免遮挡） */
+      display:none;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      top: 16px;
+      transform: translateX(-50%);
+      z-index: 40;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(216,23,42,0.18);
+      background: rgba(255,255,255,0.92);
+      box-shadow: 0 18px 40px rgba(15, 20, 25, 0.16);
+      color: rgba(216,23,42,0.95);
+      font-weight: 900;
+      letter-spacing:.2px;
+      opacity: 0;
+      transition: 200ms ease;
+      pointer-events:none;
+    }
+    .toast.show{ opacity: 1; }
+
+    @media (max-width: 860px){
+      .countInner{ flex-direction:column; align-items:stretch; }
+      .digits{ justify-content:flex-start; }
+      .chip{ min-width: 86px; }
+      .num{ font-size: 28px; }
+    }
+    @media (max-width: 640px){
+      .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .day{ min-height: 112px; }
+      #fx{ height: 44vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="paperNoise"></div>
+
+  <div class="bgArt" aria-hidden="true">
+    <svg viewBox="0 0 1200 800" preserveAspectRatio="none">
+      <!-- 远山水墨 -->
+      <path d="M0 310 C140 280 210 320 340 300 C470 278 560 250 720 290 C860 325 980 270 1200 300 L1200 800 L0 800 Z"
+            fill="rgba(31,35,40,0.05)"/>
+      <path d="M0 350 C160 320 240 380 360 350 C520 310 650 320 780 360 C940 410 1020 330 1200 360 L1200 800 L0 800 Z"
+            fill="rgba(31,35,40,0.035)"/>
+
+      <!-- 红日（冬日暖意） -->
+      <circle cx="180" cy="150" r="48" fill="rgba(216,23,42,0.10)"/>
+      <circle cx="180" cy="150" r="28" fill="rgba(216,23,42,0.12)"/>
+
+      <!-- 飘雪点点 -->
+      <g fill="rgba(31,35,40,0.06)">
+        <circle cx="320" cy="120" r="2.4"/><circle cx="360" cy="160" r="1.8"/><circle cx="540" cy="110" r="2.0"/>
+        <circle cx="780" cy="140" r="2.2"/><circle cx="910" cy="105" r="1.7"/><circle cx="1040" cy="160" r="2.0"/>
+        <circle cx="620" cy="190" r="1.6"/><circle cx="460" cy="210" r="2.1"/><circle cx="1100" cy="220" r="1.8"/>
+      </g>
+
+      <!-- 梅枝（左上） -->
+      <path d="M40,160 C160,70 260,160 340,135 C430,105 520,60 700,140"
+            fill="none" stroke="rgba(31,35,40,0.20)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M180,130 C150,160 125,188 96,220"
+            fill="none" stroke="rgba(31,35,40,0.16)" stroke-width="6" stroke-linecap="round"/>
+      <g>
+        <circle cx="175" cy="132" r="8" fill="rgba(216,23,42,0.24)"/>
+        <circle cx="198" cy="118" r="6" fill="rgba(216,23,42,0.20)"/>
+        <circle cx="240" cy="155" r="7" fill="rgba(199,154,42,0.18)"/>
+        <circle cx="340" cy="135" r="7" fill="rgba(216,23,42,0.20)"/>
+        <circle cx="468" cy="108" r="7" fill="rgba(216,23,42,0.18)"/>
+        <circle cx="595" cy="115" r="7" fill="rgba(199,154,42,0.18)"/>
+      </g>
+
+      <!-- 屋檐一角（右上） -->
+      <path d="M980 0 L1200 0 L1200 110 C1120 115 1045 95 980 70 Z" fill="rgba(31,35,40,0.06)"/>
+      <path d="M980 70 C1048 96 1122 116 1200 112" stroke="rgba(31,35,40,0.08)" stroke-width="4" fill="none"/>
+
+      <!-- 春联淡影（右侧） -->
+      <g opacity="0.9">
+        <rect x="1090" y="150" width="60" height="520" rx="16" fill="rgba(216,23,42,0.08)"/>
+        <rect x="1160" y="150" width="60" height="520" rx="16" fill="rgba(216,23,42,0.07)"/>
+        <rect x="1085" y="125" width="145" height="48" rx="16" fill="rgba(199,154,42,0.09)"/>
+      </g>
+    </svg>
+  </div>
+
+  <canvas id="fx"></canvas>
+  <div id="toast" class="toast">祝福接收，新年顺顺顺！</div>
+
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>春节放假倒计时</h1>
+        <p class="sub">工作日一杯咖啡，休息日一片海风。点一句话，放一朵烟花。</p>
+      </div>
+      <div class="stamp" id="stampText">目标：2026-02-14 18:00</div>
+    </header>
+
+    <section class="card">
+      <div class="countInner">
+        <div class="targetText">
+          <div class="t1" id="status">正在计算倒计时…</div>
+          <div class="t2" id="targetText"></div>
+        </div>
+
+        <div class="digits">
+          <div class="chip"><div class="num" id="dd">0</div><div class="lab">天</div></div>
+          <div class="chip"><div class="num" id="hh">00</div><div class="lab">时</div></div>
+          <div class="chip"><div class="num" id="mm">00</div><div class="lab">分</div></div>
+          <div class="chip"><div class="num" id="ss">00</div><div class="lab">秒</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div id="grid" class="grid" aria-label="从今天到目标日期的日历"></div>
+      <div class="foot" id="foot"></div>
+    </section>
+  </div>
+
+  <script>
+    const target = new Date(2026, 1, 14, 18, 0, 0, 0);
+
+    const $ = (id) => document.getElementById(id);
+    const pad2 = (n) => String(n).padStart(2, "0");
+
+    const dd = $("dd"), hh = $("hh"), mm = $("mm"), ss = $("ss");
+    const status = $("status"), targetText = $("targetText"), stampText = $("stampText");
+    const grid = $("grid"), foot = $("foot");
+
+    // <= 8字：贴合打工人/休息日状态（可复现选择）
+    const workBless = [
+      "宜站起来走走","宜少喝奶茶","宜早点下班","宜专注一小时","宜清空收件箱",
+      "宜把事做小","宜慢慢来","宜整理桌面","宜先做最难","宜下楼透气"
+    ];
+    const restBless = [
+      "宜睡到自然醒","宜晒太阳","宜海风散步","宜发呆十分钟","宜见喜欢的人",
+      "宜吃顿好的","宜不回消息","宜追一集剧","宜收拾心情","宜去公园"
+    ];
+
+    function fmtTarget(d){
+      return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+    }
+    function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+    function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+    function weekName(d){ return ["周日","周一","周二","周三","周四","周五","周六"][d.getDay()]; }
+
+    // 休息日：周六/周日
+    function isRestDay(d){
+      const w = d.getDay();
+      return w === 0 || w === 6;
+    }
+    function blessForDate(d){
+      const seed = d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate();
+      if (isRestDay(d)) return restBless[seed % restBless.length];
+      return workBless[seed % workBless.length];
+    }
+
+    function renderCountdown(){
+      const now = new Date();
+      const remain = target.getTime() - now.getTime();
+
+      stampText.textContent = `目标：${fmtTarget(target)}`;
+      targetText.textContent = `距离放假点：${fmtTarget(target)}（本地时间）`;
+
+      if (remain <= 0){
+        dd.textContent="0"; hh.textContent="00"; mm.textContent="00"; ss.textContent="00";
+        status.textContent="到点啦：新年顺顺顺！";
+        return;
+      }
+
+      const totalSec = Math.floor(remain/1000);
+      dd.textContent = String(Math.floor(totalSec/86400));
+      hh.textContent = pad2(Math.floor((totalSec%86400)/3600));
+      mm.textContent = pad2(Math.floor((totalSec%3600)/60));
+      ss.textContent = pad2(totalSec%60);
+      status.textContent="上班不是终点，放假才是。";
+    }
+
+    // ===== 日历渲染 =====
+    function renderCalendar(){
+      grid.innerHTML="";
+      const today = startOfDay(new Date());
+      const endDay = startOfDay(target);
+
+      if (today > endDay){
+        foot.textContent = `目标日期已过：${fmtTarget(target)}。`;
+        return;
+      }
+
+      const totalDays = Math.floor((endDay - today)/86400000) + 1;
+
+      // 周一对齐：隐藏占位
+      const monBased = (today.getDay() === 0 ? 7 : today.getDay());
+      const offset = monBased - 1;
+      for (let i=0;i<offset;i++){
+        const empty=document.createElement("div");
+        empty.className="day";
+        empty.style.visibility="hidden";
+        grid.appendChild(empty);
+      }
+
+      for (let i=0;i<totalDays;i++){
+        const date = addDays(today, i);
+        const isToday = date.getTime() === today.getTime();
+        const isTarget = date.getTime() === endDay.getTime();
+        const rest = isRestDay(date);
+
+        const cell=document.createElement("div");
+        cell.className = "day" + (isToday ? " today" : "");
+
+        const row=document.createElement("div");
+        row.className="dateRow";
+
+        const left=document.createElement("div");
+        left.className="dateLeft";
+
+        const dateText=document.createElement("div");
+        dateText.className="dateText";
+        dateText.textContent = `${date.getMonth()+1}.${date.getDate()}`;
+
+        const wk=document.createElement("div");
+        wk.className="wk";
+        wk.textContent = weekName(date);
+
+        left.appendChild(dateText);
+        left.appendChild(wk);
+
+        // 右侧：只有今天显示圆点；目标日加一个文字提示（不做方框）
+        let right;
+        if (isToday){
+          right = document.createElement("div");
+          right.className = "todayDot";
+          right.title = "今天";
+        } else if (isTarget){
+          right = document.createElement("div");
+          right.className = "wk";
+          right.style.fontWeight = "900";
+          right.style.color = "rgba(140,95,0,0.95)";
+          right.textContent = "放假点";
+        } else {
+          right = document.createElement("div");
+          right.className = "spacer";
+        }
+
+        row.appendChild(left);
+        row.appendChild(right);
+
+        const bless=document.createElement("button");
+        bless.type="button";
+        bless.className="bless";
+        bless.textContent = blessForDate(date);
+
+        bless.addEventListener("click", (ev) => {
+          // 从祝福语位置向上绽放（只在页面上半部画，且数量不铺满）
+          const r = bless.getBoundingClientRect();
+          const x = r.left + r.width * 0.35 + Math.random() * (r.width * 0.3);
+          const y = r.top + r.height * 0.6;
+          launchFireworksFrom(x, y);
+          showToast();
+        });
+
+        // 图标：工作日咖啡 / 休息日阳光沙滩
+        const icon=document.createElement("div");
+        icon.className = "icon " + (rest ? "rest" : "work");
+        icon.textContent = rest ? "🏖️" : "☕";
+
+        cell.appendChild(row);
+        cell.appendChild(bless);
+        cell.appendChild(icon);
+
+        grid.appendChild(cell);
+      }
+
+      foot.textContent = `从今天起到放假点，共 ${totalDays} 天。`;
+    }
+
+    // ===== 烟花：不遮住日历（只画上半屏），从点击处向上发射，5秒 =====
+    const canvas = $("fx");
+    const ctx = canvas.getContext("2d");
+    let W=0, H=0, dpr=1;
+
+    function resizeFX(){
+      dpr = window.devicePixelRatio || 1;
+      const cssW = window.innerWidth;
+      const cssH = Math.floor(window.innerHeight * 0.48);
+      canvas.width = Math.floor(cssW * dpr);
+      canvas.height = Math.floor(cssH * dpr);
+      canvas.style.width = cssW + "px";
+      canvas.style.height = cssH + "px";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      W = cssW;
+      H = cssH;
+    }
+    addEventListener("resize", resizeFX);
+
+    const rockets = [];
+    const particles = [];
+    let fxActive = false;
+    let fxEndAt = 0;
+    let lastSpawn = 0;
+    let origin = { x: window.innerWidth*0.5, y: window.innerHeight*0.45 };
+
+    function rand(a,b){ return a + Math.random()*(b-a); }
+    function pick(arr){ return arr[(Math.random()*arr.length)|0]; }
+
+    function startFX(){
+      resizeFX();
+      canvas.style.display = "block";
+      fxActive = true;
+      fxEndAt = performance.now() + 5000;
+      lastSpawn = 0;
+    }
+
+    function spawnRocketFromOrigin(){
+      // origin.y 是页面坐标；但 canvas 只在上半屏显示，所以把 y 映射到 canvas 范围
+      // 我们希望“从祝福语往上到网页上方”，所以发射点取 min(origin.y, H-10)
+      const startY = Math.min(origin.y, H - 10);
+      const x = origin.x + rand(-18, 18);
+      const y = startY + rand(10, 26);
+
+      const vx = rand(-0.35, 0.35);
+      const vy = rand(-9.5, -12.5);           // 向上更明显
+      const peak = rand(H*0.10, H*0.32);      // 在上半屏爆炸
+
+      rockets.push({
+        x, y, vx, vy,
+        peak,
+        trail: [],
+        color: pick(["#d8172a","#ff3a6a","#ffcc4a","#1f8a70","#b11c3a"])
+      });
+    }
+
+    function explode(x,y, baseColor){
+      const palette = ["#d8172a","#ff3a6a","#ffcc4a","#1f8a70","#b11c3a"];
+      const color = baseColor || pick(palette);
+
+      // 不需要铺太多：粒子数量适中，但更“亮”
+      const count = 140;
+      for (let i=0;i<count;i++){
+        const a = Math.random()*Math.PI*2;
+        const sp = rand(1.2, 6.0);
+        particles.push({
+          x, y,
+          vx: Math.cos(a)*sp,
+          vy: Math.sin(a)*sp,
+          g: rand(0.05, 0.10),
+          life: rand(55, 95),
+          r: rand(1.1, 2.4),
+          color: pick([color, pick(palette)]),
+          alpha: 1
+        });
+      }
+      // 外圈金点
+      for (let i=0;i<55;i++){
+        const a = Math.random()*Math.PI*2;
+        const sp = rand(3.0, 7.0);
+        particles.push({
+          x, y,
+          vx: Math.cos(a)*sp,
+          vy: Math.sin(a)*sp,
+          g: rand(0.04, 0.09),
+          life: rand(45, 75),
+          r: rand(1.0, 2.0),
+          color: "#ffcc4a",
+          alpha: 1
+        });
+      }
+    }
+
+    function hexToRgba(hex, a){
+      const h = hex.replace("#","");
+      const r = parseInt(h.slice(0,2),16);
+      const g = parseInt(h.slice(2,4),16);
+      const b = parseInt(h.slice(4,6),16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+
+    function launchFireworksFrom(pageX, pageY){
+      origin = { x: pageX, y: pageY };
+      startFX();
+    }
+
+    function fxLoop(t){
+      if (fxActive){
+        // 轻拖尾
+        ctx.fillStyle = "rgba(251,246,234,0.18)";
+        ctx.fillRect(0,0,W,H);
+
+        // 生成频率：更克制（不铺满），每240ms一发；偶尔补一发
+        if (t - lastSpawn > 240 && t < fxEndAt){
+          spawnRocketFromOrigin();
+          if (Math.random() < 0.25) spawnRocketFromOrigin();
+          lastSpawn = t;
+        }
+
+        // 火箭
+        for (let i=rockets.length-1;i>=0;i--){
+          const r = rockets[i];
+          r.vy += 0.16;
+          r.x += r.vx;
+          r.y += r.vy;
+
+          r.trail.push({x:r.x,y:r.y});
+          if (r.trail.length > 14) r.trail.shift();
+
+          for (let k=0;k<r.trail.length;k++){
+            const p = r.trail[k];
+            const a = k / r.trail.length;
+            ctx.beginPath();
+            ctx.fillStyle = hexToRgba(r.color, 0.65 * a);
+            ctx.arc(p.x, p.y, 1.9, 0, Math.PI*2);
+            ctx.fill();
+          }
+
+          if (r.y <= r.peak || r.vy > -2.0){
+            explode(r.x, r.y, r.color);
+            rockets.splice(i,1);
+          }
+        }
+
+        // 粒子
+        for (let i=particles.length-1;i>=0;i--){
+          const p = particles[i];
+          p.life -= 1;
+          p.vx *= 0.986;
+          p.vy = p.vy * 0.986 + p.g * 10;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.alpha = Math.max(0, Math.min(1, p.life / 95));
+
+          ctx.beginPath();
+          ctx.fillStyle = hexToRgba(p.color, 0.95 * p.alpha);
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+          ctx.fill();
+
+          if (p.life <= 0) particles.splice(i,1);
+        }
+
+        if (t > fxEndAt && rockets.length === 0 && particles.length === 0){
+          fxActive = false;
+          canvas.style.display = "none";
+          ctx.clearRect(0,0,W,H);
+        }
+      }
+      requestAnimationFrame(fxLoop);
+    }
+
+    // Toast
+    const toast = $("toast");
+    let toastTimer = null;
+    function showToast(){
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1500);
+    }
+
+    // Init
+    resizeFX();
+    requestAnimationFrame(fxLoop);
+
+    renderCountdown();
+    renderCalendar();
+    setInterval(renderCountdown, 250);
+
+    // 跨零点刷新日历
+    let lastKey = `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+    setInterval(() => {
+      const now = new Date();
+      const key = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+      if (key !== lastKey){
+        lastKey = key;
+        renderCalendar();
+      }
+    }, 60000);
+  </script>
+</body>
+</html>
